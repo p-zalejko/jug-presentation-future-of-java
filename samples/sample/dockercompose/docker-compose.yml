@@ -1,0 +1,81 @@
+# docker images --format "table {{.Repository}}\t{{.Size}}" | grep jug
+# docker ps --format "table {{.ID}}\t{{.Image}}"
+# docker stats --format "table {{.Name}}\t{{.CPUPerc}}  {{.MemUsage}}"
+
+version: '3.7'
+services:
+  adoptopenjdk-openj9:
+    image: jug-adoptopenjdk-11-openj9:latest
+    ports:
+    - "8080:8080"
+    environment:
+      # The verbose option prints a status line for every class load request to the shared cache
+      JAVA_OPTS: -Xms32m -Xmx512m -XX:SharedCacheHardLimit=350m -Xshareclasses:cacheDir=/opt/shareclasses,verbose
+    volumes:
+    - /home/pawel/dev/sample-openj9-cache:/opt/shareclasses
+  adoptopenjdk-openj9-without-cds:
+    image: jug-adoptopenjdk-11-openj9:latest
+    ports:
+    - "8081:8080"
+    environment:
+      JAVA_OPTS: -Xms32m -Xmx512m
+  adoptopenjdk-hotspot:
+    image: jug-adoptopenjdk-11-hotspot:latest
+    ports:
+    - "8082:8080"
+    environment:
+      JAVA_OPTS: -Xms32m -Xmx512m -Xlog:class+path=info -XX:+UnlockDiagnosticVMOptions -Xshare:on -XX:SharedArchiveFile=/opt/app/app-cds.jsa
+
+  adoptopenjdk-hotspot-without-cds:
+    image: jug-adoptopenjdk-11-hotspot:latest
+    ports:
+    - "8083:8080"
+    environment:
+      JAVA_OPTS: -Xms32m -Xmx512m -XX:+UnlockDiagnosticVMOptions -Xshare:on
+  adoptopenjdk-hotspot-jlink:
+    image: jug-adoptopenjdk-11-jlink
+    ports:
+    - "8084:8080"
+    environment:
+      JAVA_OPTS: -Xms32m -Xmx512m -XX:+UnlockDiagnosticVMOptions -Xshare:on
+  openjdk-oracle:
+    image: jug-openjdk-11-oracle:latest
+    ports:
+    - "8085:8080"
+    environment:
+      JAVA_OPTS: -Xms32m -Xmx512m -XX:+UnlockDiagnosticVMOptions -Xshare:on
+  openjdk-jre-slim-stretch:
+    image: jug-openjdk-11-jre-slim-stretch:latest
+    ports:
+    - "8086:8080"
+    environment:
+      JAVA_OPTS: -Xms32m -Xmx512m -XX:+UnlockDiagnosticVMOptions -Xshare:on
+  openjdk-zulu:
+    image: jug-openjdk-11-zulu:latest
+    ports:
+    - "8087:8080"
+    environment:
+      JAVA_OPTS: -Xms32m -Xmx512m -XX:+UnlockDiagnosticVMOptions -Xshare:on
+  aws-corretto:
+    image: jug-aws-corretto:latest
+    ports:
+      - "8088:8080"
+    environment:
+      # it is Java 8 so -Xshare:on is not included
+      JAVA_OPTS: -Xms32m -Xmx512m
+  graalvm:
+    image: jug-graalvm:latest
+    ports:
+    - "8089:8080"
+    environment:
+      JAVA_OPTS: -Xms32m -Xmx512m
+  graalvm-native-image:
+    image: jug-graalvm-native-image:latest
+    ports:
+    - "8090:8080"
+  pzalejko-jdk:
+    image: jug-openjdk-pzalejko-11:latest
+    ports:
+    - "8091:8080"
+    environment:
+      JAVA_OPTS: -Xms32m -Xmx512m

@@ -1,0 +1,75 @@
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.  
+-->
+
+<!--
+  Anh helper scripts to create a stand-alone Gatling distributable
+-->
+<project name="gatling-blueprint-project" default="package" basedir=".">
+
+    <!-- import environment variables -->
+    <property environment="env" />
+
+    <property name="gatling.dist.name" value="gatling-charts-highcharts-bundle-3.0.2" />
+    <property name="maven.build.dir" value="${basedir}/target" />
+    <property name="gatling.dist.dir" value="${maven.build.dir}/distributable/${gatling.dist.name}" />
+
+    <!-- ############################################################## -->
+    <!-- General Targets                                                -->
+    <!-- ############################################################## -->
+
+    <target name="package" description="Build the project">
+        <antcall target="gatling:copy-gatling-from-maven-setup" />
+        <antcall target="gatling:create-distributables" />
+    </target>
+
+    <!-- ############################################################## -->
+    <!-- Misc                                                           -->
+    <!-- ############################################################## -->
+
+    <target name="gatling:copy-gatling-from-maven-setup">
+        <delete dir="${gatling.dist.dir}/conf" />
+        <!-- copy the "user-files" -->
+        <copy todir="${gatling.dist.dir}/user-files/resources">
+            <fileset dir="${basedir}/src/test/resources" />
+        </copy>
+        <!-- copy the Gatling tests -->
+        <copy todir="${gatling.dist.dir}/user-files/simulations">
+            <fileset dir="${basedir}/src/test/scala" />
+        </copy>
+        <!-- copy the Gatling configuration files -->
+        <copy todir="${gatling.dist.dir}/conf">
+            <fileset dir="${basedir}/conf" />
+        </copy>
+        <!-- copy the overlayed directories -->
+        <copy todir="${gatling.dist.dir}" overwrite="true">
+            <fileset dir="${basedir}/src/overlay" />
+        </copy>
+        <!-- make the Gatling scripts executable -->
+        <chmod dir="${gatling.dist.dir}/bin" perm="ugo+rx" includes="**/*.sh" />
+        <!-- copy the "README.md" -->
+        <copy file="README.md" tofile="${gatling.dist.dir}/README.md" />
+        <!-- copy the "CHANGELOG.md" -->
+        <copy file="${basedir}/CHANGELOG.md" tofile="${gatling.dist.dir}/CHANGELOG.md" />
+    </target>
+
+    <target name="gatling:create-distributables">
+        <tar destfile="./target/gatling-blueprint-project.tar.gz" compression="gzip" basedir="${gatling.dist.dir}" />
+    </target>
+
+</project>

@@ -1,0 +1,10 @@
+FROM adoptopenjdk/openjdk11:jdk-11.0.1.13-alpine-slim
+
+# Creating A JDK Class-Data Archive
+RUN java -Xshare:dump
+
+RUN mkdir /opt/app
+ARG JAR_FILE
+ADD ${JAR_FILE} /opt/app/app.jar
+
+ENTRYPOINT exec java $JAVA_OPTS -jar /opt/app/app.jar
