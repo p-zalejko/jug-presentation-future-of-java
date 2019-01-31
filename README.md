@@ -5,3 +5,4 @@
 - OpenJDK and different builds
 - A few words about JVM implementations (Hotspot, OpenJ9, GraalVM) 
 - A simple hello world application launched with different builds and JVMs
+- how to build OpenJDK: https://github.com/p-zalejko/openjdk
